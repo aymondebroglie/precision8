@@ -1,23 +1,24 @@
 import java.util.List;
+import java.util.Set;
 
 public class Client {
 
-    private List<String> likedIngredients;
-    private List<String> dislikedIngredients;
+    private Set<String> likedIngredients;
+    private Set<String> dislikedIngredients;
 
     public Client(
-        List<String> likedIngredients,
-        List<String> dislikedIngredients
-    ) {
-        this.likedIngredients = likedIngredients;
-        this.dislikedIngredients = dislikedIngredients;
-    }
+        Set<String> likedIngredients,
+        Set<String> dislikedIngredient
+  ){
+    this.likedIngredients = likedIngredients;
+    this.dislikedIngredients = dislikedIngredient;
+  }
 
-    public List<String> getDislikedIngredients() {
+    public Set<String> getDislikedIngredients() {
         return dislikedIngredients;
     }
 
-    public List<String> getLikedIngredients() {
+    public Set<String> getLikedIngredients() {
         return likedIngredients;
     }
 }
