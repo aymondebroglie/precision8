@@ -22,5 +22,8 @@ public class Main {
         }
 
         scanner.close();
+
+        KnapsackStyleSolver solver = new KnapsackStyleSolver(clients);
+        solver.solve();
     }
 }
