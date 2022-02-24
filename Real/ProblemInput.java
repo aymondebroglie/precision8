@@ -9,7 +9,7 @@ public class ProblemInput {
         this.projects = projects;
     }
 
-    class Skill implements Comparable {
+    static class Skill implements Comparable {
         public final String name;
         public final int level;
 
@@ -38,7 +38,7 @@ public class ProblemInput {
             return c1 == 0 ? skill.level - level : c1;
         }
     }
-    class Contributor {
+    static class Contributor {
         public final String name;
         public final List<Skill> skills;
 
@@ -48,7 +48,7 @@ public class ProblemInput {
         }
     }
 
-    class Project {
+    static class Project {
         public final String name;
         public final int daysRequired;
         public final int score;

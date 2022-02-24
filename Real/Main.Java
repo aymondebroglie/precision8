@@ -8,6 +8,6 @@ class Main {
     public static void main(String[] args) {
         var input = Parser.parseProblem(args[0]);
         var solver = new LouisTestSolver();
-        SolToFile.write(solver.solve(input));
+        SolToFile.write(input, solver.solve(input));
     }
 }
