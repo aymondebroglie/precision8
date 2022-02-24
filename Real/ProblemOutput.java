@@ -7,9 +7,9 @@ public class ProblemOutput {
     public static class CompletedProject {
         public final String name;
         // role to person names
-        public final Map<String, String> assignments;
+        public final List<String> assignments;
 
-        public CompletedProject(String name, Map<String, String> assignments) {
+        public CompletedProject(String name, List<String> assignments) {
             this.name = name;
             this.assignments = assignments;
         }
