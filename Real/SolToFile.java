@@ -13,9 +13,7 @@ public class SolToFile {
                 writer.println(project.name);
                 input.projects.stream().filter(p -> p.name.equals(project.name)).findAny().ifPresent(inProject -> {
                     writer.println(
-                            inProject.roles.stream().map(role ->
-                                    project.assignments.get(role.name)
-                            ).collect(Collectors.joining(" ")));
+                            String.join(" ", project.assignments));
                 });
             });
         } catch (FileNotFoundException e) {
