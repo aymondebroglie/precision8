@@ -9,7 +9,7 @@ public class ProblemInput {
         this.projects = projects;
     }
 
-    static class Skill implements Comparable {
+    public static class Skill implements Comparable<Skill> {
         public final String name;
         public final int level;
 
@@ -32,13 +32,12 @@ public class ProblemInput {
         }
 
         @Override
-        public int compareTo(Object o) {
-            Skill skill = (Skill) o;
-            var c1 = name.compareTo(skill.name);
-            return c1 == 0 ? skill.level - level : c1;
+        public int compareTo(Skill o) {
+            var c1 = name.compareTo(o.name);
+            return c1 == 0 ? o.level - level : c1;
         }
     }
-    static class Contributor {
+    public static class Contributor {
         public final String name;
         public final List<Skill> skills;
 
@@ -48,7 +47,7 @@ public class ProblemInput {
         }
     }
 
-    static class Project {
+    public static class Project {
         public final String name;
         public final int daysRequired;
         public final int score;
