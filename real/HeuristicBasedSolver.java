@@ -34,6 +34,12 @@ public class HeuristicBasedSolver implements Solver {
                 currentScore += resolveProject(project, daysWorked.get(project), currentDay);
             }
 
+            // filter project which deadline expired
+            int finalCurrentDay = currentDay;
+            availableProjects = availableProjects.stream()
+                    .filter(project -> project.bestBefore + project.score - project.daysRequired > finalCurrentDay)
+                    .collect(Collectors.toList());
+
             // assign contributors to project
             for (ProblemInput.Project project: new ArrayList<>(availableProjects)) {
                 assignToProject(project, availableContributors);
@@ -42,7 +48,7 @@ public class HeuristicBasedSolver implements Solver {
             currentDay++;
         } while (!daysWorked.isEmpty());
 
-        System.out.println("Score :" + currentScore + " _ Project left :" + availableProjects.size());
+        System.out.println("Score :" + currentScore + " _ Projects aborted :" + (input.projects.size() - assignmentsHistory.size()));
         return new ProblemOutput(assignmentsHistory.entrySet().stream().map(entry ->
             new ProblemOutput.CompletedProject(entry.getKey().name, entry.getValue().stream().map(contributor -> contributor.name).collect(Collectors.toList()))
         ).collect(Collectors.toList()));
