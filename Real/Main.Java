@@ -15,7 +15,7 @@ class Main {
             }
             System.out.println("Processing " + file.getName());
             var input = Parser.parseProblem(file.getAbsolutePath());
-            var solver = new LouisTestSolver();
+            var solver = new HeuristicBasedSolver();
             SolToFile.write(file, input, solver.solve(input));
         });
     }

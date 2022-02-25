@@ -11,7 +11,7 @@ public class ProblemInput {
 
     public static class Skill implements Comparable<Skill> {
         public final String name;
-        public final int level;
+        public int level;
 
         Skill(String name, int level) {
             this.name = name;
@@ -45,6 +45,16 @@ public class ProblemInput {
             this.name = name;
             this.skills = skills;
         }
+
+        public Skill getSKill(String skillName) {
+            return skills.stream().filter(skill -> skill.name.equals(skillName)).findAny().orElse(new Skill(skillName, 0));
+        }
+
+        public int getWeightForRole(Skill role) {
+            var level = getSKill(role.name).level;
+            if (level > role.level) return 1; // it's better if the person learn
+            return (int)( level / (float)skills.size() + 1 ); // we use expert of one field first not to dry resources
+        }
     }
 
     public static class Project {
@@ -60,6 +70,17 @@ public class ProblemInput {
             this.score = score;
             this.bestBefore = bestBefore;
             this.roles = roles;
+        }
+
+        public Skill getRole(String roleName) {
+            return roles.stream().filter(role -> role.name.equals(roleName)).findAny().orElse(null);
+        }
+
+        // the lower the fastest it should be done
+        public int getWeight() {
+            // we value score and deadline and set a priority based on roles level to do the project to ensure we max contributors learning
+            return bestBefore - daysRequired - score
+                    + roles.stream().map(skill -> skill.level).reduce(1, Integer::sum);
         }
     }
 

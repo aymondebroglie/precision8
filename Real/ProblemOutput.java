@@ -1,7 +1,6 @@
 package real;
 
 import java.util.List;
-import java.util.Map;
 
 public class ProblemOutput {
     public static class CompletedProject {
