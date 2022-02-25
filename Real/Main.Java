@@ -4,7 +4,6 @@ import real.louis_test_sol.LouisTestSolver;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 class Main {
     public static void main(String[] args) {
@@ -16,7 +15,7 @@ class Main {
             System.out.println("Processing " + file.getName());
             var input = Parser.parseProblem(file.getAbsolutePath());
             var solver = new LouisTestSolver();
-            SolToFile.write(file, input, solver.solve(input));
+            SolToFile.write(file, solver.solve(input));
         });
     }
 }

@@ -13,7 +13,7 @@ public class ProblemInput {
         public final String name;
         public final int level;
 
-        Skill(String name, int level) {
+        public Skill(String name, int level) {
             this.name = name;
             this.level = level;
         }
@@ -41,7 +41,7 @@ public class ProblemInput {
         public final String name;
         public final List<Skill> skills;
 
-        Contributor(String name, List<Skill> skills) {
+        public Contributor(String name, List<Skill> skills) {
             this.name = name;
             this.skills = skills;
         }

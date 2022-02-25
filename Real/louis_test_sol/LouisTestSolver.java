@@ -5,39 +5,72 @@ import real.ProblemOutput;
 import real.Solver;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class LouisTestSolver implements Solver {
+    private List<ProblemInput.Contributor> currentContrib = new ArrayList<>();
+
     @Override
     public ProblemOutput solve(ProblemInput input) {
-        var res = input.projects.stream().map(inProject -> {
-            var possiblePeople = new HashMap<ProblemInput.Skill, List<String>>();
-            var neededSkills = inProject.roles.stream().map(r -> r.name).collect(Collectors.toSet());
-            input.contributors.forEach(c -> {
-                c.skills.forEach(skill -> {
-                    if (!neededSkills.contains(skill.name)) return;
-                    /*possiblePeople.merge(skill.name, new ArrayList<>(Arrays.asList(c.name)), (old, n) -> {
-                        var m = new ArrayList<>(old);
-                        m.addAll(n);
-                        return m;
-                    });*/
-                });
+        List<ProblemOutput.CompletedProject> finalProjects = new ArrayList<>();
+        var toComplete = new ArrayList<>(input.projects);
+        currentContrib = input.contributors;
+        Runnable fillProject = () -> {
+            var inProject = toComplete.get(0);
+            toComplete.remove(inProject);
+            var possiblePeople = inProject.roles.stream().map(role ->
+                    new AbstractMap.SimpleEntry<>(role, new HashSet<ProblemInput.Contributor>())).collect(Collectors.toList());
+            var mayBeOkPeople = inProject.roles.stream().map(role ->
+                    new AbstractMap.SimpleEntry<>(role, new HashSet<ProblemInput.Contributor>())).collect(Collectors.toList());
+            currentContrib.forEach(c -> {
+                possiblePeople.stream()
+                        .filter(role -> c.skills.stream().anyMatch(s -> s.name.equals(role.getKey().name) && s.level >= role.getKey().level))
+                        .forEach(e -> e.getValue().add(c));
+                mayBeOkPeople.stream()
+                        .filter(role -> c.skills.stream().anyMatch(s -> s.name.equals(role.getKey().name) && s.level == role.getKey().level - 1))
+                        .collect(Collectors.toList())
+                        .forEach(e -> e.getValue().add(c));
             });
-            var assign = new HashMap<String, String>();
-            while (possiblePeople.size() > 0) {
-                var minEntry = possiblePeople.entrySet().stream().min((e1, e2) -> e2.getValue().size() - e1.getValue().size()).get();
+            var rolesToAssignIndex = IntStream.range(0, possiblePeople.size()).boxed().collect(Collectors.toList());
+            var assign = inProject.roles.stream().map(p -> "").collect(Collectors.toList());
+            while (!rolesToAssignIndex.isEmpty()) {
+                var minEntryIndex = rolesToAssignIndex.stream().min(Comparator.comparingInt(
+                        e -> possiblePeople.get(e).getValue().size())).get();
+                var minEntry = possiblePeople.get(minEntryIndex);
+                rolesToAssignIndex.remove(minEntryIndex);
                 if (minEntry.getValue().isEmpty()) {
-                    continue;
+                    toComplete.add(inProject);
+                    return;
                 }
-                var person = minEntry.getValue().get(0);
-                assign.put(minEntry.getKey().name, person);
-                possiblePeople.forEach((key, value) -> {
-                    value.remove(person);
-                });
-                possiblePeople.remove(minEntry.getKey());
+                var skill = minEntry.getKey();
+                Function<ProblemInput.Contributor, Optional<ProblemInput.Skill>> getPersonSkill = p -> p.skills
+                        .stream().filter(s -> s.name.equals(skill.name)).findAny();
+                var person = minEntry.getValue().stream().min(Comparator.comparingInt(c -> getPersonSkill.apply(c).get().level)).get();
+                assign.set(minEntryIndex, person.name);
+                possiblePeople.forEach(e -> e.getValue().remove(person));
+                getPersonSkill.apply(person)
+                        .ifPresent(pSkill -> mayBeOkPeople.forEach(mayBeE -> {
+                            var maySkill = mayBeE.getKey();
+                            if (maySkill.name.equals(skill.name) && pSkill.level >= maySkill.level) {
+                                var possible = possiblePeople.get(mayBeOkPeople.indexOf(mayBeE));
+                                possible.getValue().addAll(mayBeE.getValue());
+                            }
+                        }));
             }
-            return new ProblemOutput.CompletedProject(inProject.name, List.of());
-        }).collect(Collectors.toList());
-        return new ProblemOutput(res);
+            finalProjects.add(new ProblemOutput.CompletedProject(inProject.name, assign));
+            currentContrib = currentContrib.stream().map(c -> new ProblemInput.Contributor(c.name, c.skills.stream().map(s -> {
+                var index = assign.indexOf(c.name);
+                if (index >= 0 && inProject.roles.get(index).level >= s.level) {
+                    return new ProblemInput.Skill(s.name, s.level + 1);
+                }
+                return s;
+            }).collect(Collectors.toList()))).collect(Collectors.toList());
+        };
+        while (!toComplete.isEmpty()) {
+            fillProject.run();
+        }
+        return new ProblemOutput(finalProjects);
     }
 }
