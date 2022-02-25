@@ -1,4 +1,4 @@
-500 1000
+500 1000 - Score :2639056 _ Projects left :13
 BakhodirT 1
 Blockchain++ 2
 JenE 1

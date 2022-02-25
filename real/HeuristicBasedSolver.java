@@ -37,7 +37,8 @@ public class HeuristicBasedSolver implements Solver {
             // filter project which deadline expired
             int finalCurrentDay = currentDay;
             availableProjects = availableProjects.stream()
-                    .filter(project -> project.bestBefore + project.score - project.daysRequired > finalCurrentDay)
+                    // we divide the score by 2 to ensure the project is still worth it if we deliver late
+                    .filter(project -> project.bestBefore + (project.score / 2) - project.daysRequired > finalCurrentDay)
                     .collect(Collectors.toList());
 
             // assign contributors to project

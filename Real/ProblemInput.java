@@ -79,7 +79,9 @@ public class ProblemInput {
         // the lower the fastest it should be done
         public int getWeight() {
             // we value score and deadline and set a priority based on roles level to do the project to ensure we max contributors learning
-            return bestBefore - daysRequired - score
+            // we mitigate the score to have it on the same scale as deadline
+            // The more complex projects will be the more its complexity weight and the more we will have contributors learning to face complex projects
+            return bestBefore - daysRequired - score / 10
                     + roles.stream().map(skill -> skill.level).reduce(1, Integer::sum);
         }
     }
